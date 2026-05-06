@@ -1,337 +1,321 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Vyskúšaj sa v slovíčkach</title>
+/* ===========================
+   GLOBAL VARIABLES
+=========================== */
+var AllDictionaries = "";
+var TestWords = [];
+var WordPosition = 0;
+var from_to = "to_sk";
+var Score = 0;
 
-    <!-- jQuery + Bootstrap -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
-    <script src="js/bootstrap.bundle.js"></script>
+var WrongWords = {};
+var RepeatMode = false;
+var RepeatList = [];
 
-    <script>
-        var AllDictionaries = "";
-        var TestWords = [];
-        var WordPosition = 0;
-        var from_to = "to_sk";
-        var Score = 0;
+/* ===========================
+   LOAD DICTIONARY
+=========================== */
+function ReadDictionary() {
+    $.ajax({
+        url: "https://www.nelicorn.com/games/learn_words/german_dictionary.json",
+        dataType: "json"
+    }).done(function (result) {
 
-        // NEW
-        var WrongWords = {};
-        var RepeatMode = false;
-        var RepeatList = [];
+        AllDictionaries = result;
 
-        function ReadDictionary() {
-            $.ajax({
-                url: "https://www.nelicorn.com/games/learn_words/german_dictionary.json",
-                dataType: "json"
-            }).done(function (result) {
+        var LanguageList = Object.keys(AllDictionaries);
+        var language = "";
 
-                AllDictionaries = result;
+        LanguageList.forEach((key, index) => {
+            language += `
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="language${index}" value="${key}" onchange="LanguageSelected()">
+                    <label class="form-check-label" for="language${index}">
+                        ${key}
+                    </label>
+                </div>`;
+        });
 
-                var LanguageList = Object.keys(AllDictionaries);
-                var language = "";
+        document.getElementById("language").innerHTML = language;
+    });
+}
 
-                LanguageList.forEach((key, index) => {
-                    language += `
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="language${index}" value="${key}" onchange="LanguageSelected()">
-                            <label class="form-check-label" for="language${index}">
-                                ${key}
-                            </label>
-                        </div>`;
-                });
+/* ===========================
+   LANGUAGE SELECTED
+=========================== */
+function LanguageSelected() {
+    var lessons = "";
+    var LanguageList = Object.keys(AllDictionaries);
 
-                document.getElementById("language").innerHTML = language;
-            });
-        }
+    LanguageList.forEach((key, index) => {
+        if (document.getElementById("language" + index).checked) {
 
-        function LanguageSelected() {
-            var lessons = "";
-            var LanguageList = Object.keys(AllDictionaries);
+            lessons += `
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${key}Dictionary">
+                            <h5 class="text-body"><i class="bi bi-book me-2"></i>${key}</h5>
+                        </button>
+                    </h2>
+                    <div id="${key}Dictionary" class="accordion-collapse collapse show ps-3">
+                        <div class="accordion-body">
+            `;
 
-            LanguageList.forEach((key, index) => {
-                if (document.getElementById("language" + index).checked) {
-
-                    lessons += `
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${key}Dictionary">
-                                    <h5 class="text-body"><i class="bi bi-book me-2"></i>${key}</h5>
-                                </button>
-                            </h2>
-                            <div id="${key}Dictionary" class="accordion-collapse collapse show ps-3">
-                                <div class="accordion-body">
-                    `;
-
-                    var LessonList = Object.keys(AllDictionaries[key]);
-                    LessonList.forEach((lesson, LessonIndex) => {
-                        var WordList = Object.keys(AllDictionaries[key][lesson]);
-                        lessons += `
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="${key}${LessonIndex}" value="${lesson}" onchange="LessonSelected()">
-                                <label class="form-check-label" for="${key}${LessonIndex}">
-                                    ${lesson} (${WordList.length})
-                                </label>
-                            </div>`;
-                    });
-
-                    lessons += `
-                                </div>
-                            </div>
-                        </div>`;
-                }
+            var LessonList = Object.keys(AllDictionaries[key]);
+            LessonList.forEach((lesson, LessonIndex) => {
+                var WordList = Object.keys(AllDictionaries[key][lesson]);
+                lessons += `
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" id="${key}${LessonIndex}" value="${lesson}" onchange="LessonSelected()">
+                        <label class="form-check-label" for="${key}${LessonIndex}">
+                            ${lesson} (${WordList.length})
+                        </label>
+                    </div>`;
             });
 
-            document.getElementById("list-dictionaries").style.display = lessons ? "block" : "none";
-            document.getElementById("lessons").innerHTML = lessons;
-            document.getElementById("controls").innerHTML = "";
+            lessons += `
+                        </div>
+                    </div>
+                </div>`;
         }
+    });
 
-        function LessonSelected() {
-            TestWords = [];
-            var LessonChecked = false;
+    document.getElementById("list-dictionaries").style.display = lessons ? "block" : "none";
+    document.getElementById("lessons").innerHTML = lessons;
+    document.getElementById("controls").innerHTML = "";
+}
 
-            var LanguageList = Object.keys(AllDictionaries);
+/* ===========================
+   LESSON SELECTED
+=========================== */
+function LessonSelected() {
+    TestWords = [];
+    var LessonChecked = false;
 
-            LanguageList.forEach((key, index) => {
-                if (document.getElementById("language" + index).checked) {
+    var LanguageList = Object.keys(AllDictionaries);
 
-                    var LessonList = Object.keys(AllDictionaries[key]);
-                    LessonList.forEach((lesson, LessonIndex) => {
+    LanguageList.forEach((key, index) => {
+        if (document.getElementById("language" + index).checked) {
 
-                        if (document.getElementById(`${key}${LessonIndex}`).checked) {
-                            LessonChecked = true;
+            var LessonList = Object.keys(AllDictionaries[key]);
+            LessonList.forEach((lesson, LessonIndex) => {
 
-                            var WordList = Object.keys(AllDictionaries[key][lesson]);
-                            WordList.forEach(word => {
-                                TestWords.push([word, AllDictionaries[key][lesson][word], key]);
-                            });
-                        }
+                if (document.getElementById(`${key}${LessonIndex}`).checked) {
+                    LessonChecked = true;
+
+                    var WordList = Object.keys(AllDictionaries[key][lesson]);
+                    WordList.forEach(word => {
+                        TestWords.push([word, AllDictionaries[key][lesson][word], key]);
                     });
                 }
             });
-
-            if (LessonChecked) {
-                document.getElementById("controls").innerHTML = `
-                    <h3 class="text-secondary mt-4">Smer skúšania</h3>
-                    <div class="container-fluid px-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" id="to_sk" name="directions" value="to_sk">
-                            <label class="form-check-label" for="to_sk">Do slovenčiny</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" id="from_sk" name="directions" value="from_sk">
-                            <label class="form-check-label" for="from_sk">Zo slovenčiny</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" id="both" name="directions" value="both" checked>
-                            <label class="form-check-label" for="both">Obidve</label>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-primary mt-4" onclick="StartTest()">Začať test <i class="bi bi-play-circle"></i></button>
-                `;
-            } else {
-                document.getElementById("controls").innerHTML = "";
-            }
         }
+    });
 
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                let j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        function setDirection() {
-            if (document.getElementById("both").checked) {
-                from_to = Math.random() < 0.5 ? "to_sk" : "from_sk";
-            } else {
-                from_to = document.getElementById("from_sk").checked ? "from_sk" : "to_sk";
-            }
-        }
-
-        function ShowWord(foreign, slovak, language, direction) {
-            let text = "";
-
-            if (direction === "to_sk") {
-                text = `<h3 class="text-secondary mt-4">Prelož <span class="text-dark">${foreign}</span> do <span class="text-dark">Slovenčiny</span></h3>`;
-            } else {
-                text = `<h3 class="text-secondary mt-4">Prelož <span class="text-dark">${slovak}</span> do <span class="text-dark">${language}</span></h3>`;
-            }
-
-            text += `
-                <div class="container-fluid px-3">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" id="result" placeholder="Odpoveď napíš sem">
-                                <button class="btn btn-primary" id="ShowResult" onclick="ShowResult()">Ďalej</button>
-                            </div>
-                        </div>
-                    </div>
+    if (LessonChecked) {
+        document.getElementById("controls").innerHTML = `
+            <h3 class="text-secondary mt-4">Smer skúšania</h3>
+            <div class="container-fluid px-3">
+                <div class="form-check mb-1">
+                    <input class="form-check-input" type="radio" id="to_sk" name="directions" value="to_sk">
+                    <label class="form-check-label" for="to_sk">Do slovenčiny</label>
                 </div>
-            `;
-            return text;
-        }
-
-        function StartTest() {
-            shuffle(TestWords);
-            WordPosition = 0;
-            Score = 0;
-            WrongWords = {};
-            RepeatMode = false;
-
-            document.getElementById("test-stopped").style.display = "none";
-            document.getElementById("test-running").style.display = "block";
-
-            showCurrent();
-        }
-
-        function showCurrent() {
-            let list = RepeatMode ? RepeatList : TestWords;
-
-            if (WordPosition >= list.length) {
-                if (!RepeatMode && Object.keys(WrongWords).length > 0) {
-                    startRepeatRound();
-                    return;
-                }
-                EndTest();
-                return;
-            }
-
-            let foreign = list[WordPosition][0];
-            let slovak = list[WordPosition][1];
-            let lang = list[WordPosition][2];
-
-            setDirection();
-
-            document.getElementById("test").innerHTML =
-                ShowWord(foreign, slovak, lang, from_to);
-
-            SetEnterEvent();
-            document.getElementById("result").focus();
-        }
-
-        function ShowResult() {
-            let list = RepeatMode ? RepeatList : TestWords;
-
-            let foreign = list[WordPosition][0];
-            let slovak = list[WordPosition][1];
-
-            let correct = (from_to === "to_sk") ? slovak : foreign;
-            let user = document.getElementById("result").value.trim().toLowerCase();
-            let correctLower = correct.toLowerCase();
-
-            if (user === correctLower) {
-                Score++;
-                Answer = `<p class="text-left"><span class="text-success"><i class="bi bi-check"></i> Správne!</span></p>`;
-            } else {
-                Answer = `<p class="text-left"><span class="text-danger"><i class="bi bi-x"></i> Neprávne!</span> ${foreign} = ${slovak}</p>`;
-
-                if (!WrongWords[foreign]) {
-                    WrongWords[foreign] = { foreign, slovak, tries: 1 };
-                } else {
-                    WrongWords[foreign].tries++;
-                }
-            }
-
-            document.getElementById("answwer").innerHTML = Answer;
-
-            WordPosition++;
-            showCurrent();
-        }
-
-        function startRepeatRound() {
-            RepeatMode = true;
-            WordPosition = 0;
-
-            RepeatList = Object.values(WrongWords).map(w => [w.foreign, w.slovak, ""]);
-            shuffle(RepeatList);
-
-            document.getElementById("answwer").innerHTML =
-                `<p class="text-info">Opakovanie nesprávnych slov...</p>`;
-
-            showCurrent();
-        }
-
-        function EndTest() {
-            let summary = `
-                <h3 class="text-secondary mt-4">Koniec testu</h3>
-                <p>Správne: <strong>${Score}</strong> z <strong>${TestWords.length}</strong></p>
-            `;
-
-            if (Object.keys(WrongWords).length > 0) {
-                summary += `<h4 class="mt-4">Slová, ktoré ti robili problém:</h4><ul>`;
-                for (let w of Object.values(WrongWords)) {
-                    summary += `<li>${w.foreign} = ${w.slovak} — pokusy: ${w.tries}</li>`;
-                }
-                summary += `</ul>`;
-            }
-
-            summary += `<button class="btn btn-primary mt-3" onclick="StartAgain()">Skúsiť znova</button>`;
-
-            document.getElementById("test").innerHTML = summary;
-            document.getElementById("answwer").innerHTML = "";
-        }
-
-        function StartAgain() {
-            location.reload();
-        }
-
-        function SetEnterEvent() {
-            let input = document.getElementById("result");
-            input.addEventListener("keyup", function (event) {
-                if (event.keyCode === 13) {
-                    event.preventDefault();
-                    document.getElementById("ShowResult").click();
-                }
-            });
-        }
-    </script>
-</head>
-
-<body onload="ReadDictionary()">
-
-    <div id="test-stopped">
-        <div class="container-fluid px-5">
-            <h1 class="text-primary mt-3"><i class="bi bi-patch-question-fill me-2"></i>Vyskúšaj sa v slovíčkach</h1>
-
-            <h3 class="text-secondary mt-4">Vyber si slovník</h3>
-            <div class="container-fluid px-3">
-                <div id="language" class="form-check"></div>
+                <div class="form-check mb-1">
+                    <input class="form-check-input" type="radio" id="from_sk" name="directions" value="from_sk">
+                    <label class="form-check-label" for="from_sk">Zo slovenčiny</label>
+                </div>
+                <div class="form-check mb-1">
+                    <input class="form-check-input" type="radio" id="both" name="directions" value="both" checked>
+                    <label class="form-check-label" for="both">Obidve</label>
+                </div>
             </div>
+            <button type="button" class="btn btn-primary mt-4 w-100" onclick="StartTest()">Začať test <i class="bi bi-play-circle"></i></button>
+        `;
+    } else {
+        document.getElementById("controls").innerHTML = "";
+    }
+}
 
-            <div id="list-dictionaries" class="container-fluid px-0" style="display:none">
-                <h3 class="text-secondary mt-4">Vyber si lekcie</h3>
-                <div class="accordion" id="lessons"></div>
+/* ===========================
+   HELPERS
+=========================== */
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function setDirection() {
+    if (document.getElementById("both").checked) {
+        from_to = Math.random() < 0.5 ? "to_sk" : "from_sk";
+    } else {
+        from_to = document.getElementById("from_sk").checked ? "from_sk" : "to_sk";
+    }
+}
+
+/* ===========================
+   SHOW WORD
+=========================== */
+function ShowWord(foreign, slovak, language, direction) {
+    let text = "";
+
+    if (direction === "to_sk") {
+        text = `<h3 class="text-secondary mt-4 text-center">Prelož <span class="text-dark">${foreign}</span> → <span class="text-dark">Slovenčina</span></h3>`;
+    } else {
+        text = `<h3 class="text-secondary mt-4 text-center">Prelož <span class="text-dark">${slovak}</span> → <span class="text-dark">${language}</span></h3>`;
+    }
+
+    text += `
+        <div class="container-fluid px-3 mt-3">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control form-control-lg" id="result" placeholder="Napíš odpoveď">
+                <button class="btn btn-primary btn-lg" id="ShowResult" onclick="ShowResult()">OK</button>
             </div>
-
-            <div id="controls" class="container-fluid px-0"></div>
         </div>
-    </div>
+    `;
+    return text;
+}
 
-    <div id="test-running" style="display:none">
-        <div class="container-fluid px-5">
-            <h1 class="text-primary mt-3"><i class="bi bi-patch-question-fill me-2"></i>Vyskúšaj sa v slovíčkach</h1>
+/* ===========================
+   START TEST
+=========================== */
+function StartTest() {
+    shuffle(TestWords);
+    WordPosition = 0;
+    Score = 0;
+    WrongWords = {};
+    RepeatMode = false;
 
-            <div id="test" class="container-fluid px-0"></div>
+    document.getElementById("test-stopped").style.display = "none";
+    document.getElementById("test-running").style.display = "block";
 
-            <div class="container-fluid px-3">
-                <div id="answwer" class="row"></div>
-            </div>
+    showCurrent();
+}
 
-            <h3 class="text-secondary mt-4">Vyhodnotenie:</h3>
-            <div id="score" class="container-fluid px-3">
-                <p class="text-left">Správne: 0 / Nesprávne: 0</p>
-            </div>
+/* ===========================
+   SHOW CURRENT WORD
+=========================== */
+function showCurrent() {
+    let list = RepeatMode ? RepeatList : TestWords;
 
-            <button type="button" class="btn btn-link" onclick="StartAgain()">
-                <h4><i class="bi bi-arrow-left me-2"></i>Späť / Ukončiť test</h4>
-            </button>
-        </div>
-    </div>
+    if (WordPosition >= list.length) {
+        if (!RepeatMode && Object.keys(WrongWords).length > 0) {
+            startRepeatRound();
+            return;
+        }
+        EndTest();
+        return;
+    }
 
-</body>
-</html>
+    let foreign = list[WordPosition][0];
+    let slovak = list[WordPosition][1];
+    let lang = list[WordPosition][2];
+
+    setDirection();
+
+    document.getElementById("test").innerHTML =
+        ShowWord(foreign, slovak, lang, from_to);
+
+    SetEnterEvent();
+    document.getElementById("result").focus();
+}
+
+/* ===========================
+   SHOW RESULT
+=========================== */
+function ShowResult() {
+    let input = document.getElementById("result").value.trim();
+
+    // NEW: prevent empty answers
+    if (input === "") {
+        document.getElementById("answwer").innerHTML =
+            `<p class="text-warning mt-2"><i class="bi bi-exclamation-circle"></i> Najprv niečo napíš.</p>`;
+        return;
+    }
+
+    let list = RepeatMode ? RepeatList : TestWords;
+
+    let foreign = list[WordPosition][0];
+    let slovak = list[WordPosition][1];
+
+    let correct = (from_to === "to_sk") ? slovak : foreign;
+    let user = input.toLowerCase();
+    let correctLower = correct.toLowerCase();
+
+    if (user === correctLower) {
+        Score++;
+        Answer = `<p class="text-success mt-2"><i class="bi bi-check-circle"></i> Správne!</p>`;
+    } else {
+        Answer = `<p class="text-danger mt-2"><i class="bi bi-x-circle"></i> Neprávne — ${foreign} = ${slovak}</p>`;
+
+        if (!WrongWords[foreign]) {
+            WrongWords[foreign] = { foreign, slovak, tries: 1 };
+        } else {
+            WrongWords[foreign].tries++;
+        }
+    }
+
+    document.getElementById("answwer").innerHTML = Answer;
+
+    WordPosition++;
+    showCurrent();
+}
+
+/* ===========================
+   REPEAT ROUND
+=========================== */
+function startRepeatRound() {
+    RepeatMode = true;
+    WordPosition = 0;
+
+    RepeatList = Object.values(WrongWords).map(w => [w.foreign, w.slovak, ""]);
+    shuffle(RepeatList);
+
+    document.getElementById("answwer").innerHTML =
+        `<p class="text-info mt-3"><i class="bi bi-arrow-repeat"></i> Opakovanie nesprávnych slov...</p>`;
+
+    showCurrent();
+}
+
+/* ===========================
+   END TEST
+=========================== */
+function EndTest() {
+    let summary = `
+        <h3 class="text-secondary mt-4">Koniec testu</h3>
+        <p class="mt-2">Správne: <strong>${Score}</strong> z <strong>${TestWords.length}</strong></p>
+    `;
+
+    if (Object.keys(WrongWords).length > 0) {
+        summary += `<h4 class="mt-4">Slová na zopakovanie</h4><ul class="mt-2">`;
+        for (let w of Object.values(WrongWords)) {
+            summary += `<li>${w.foreign} = ${w.slovak} — pokusy: ${w.tries}</li>`;
+        }
+        summary += `</ul>`;
+    }
+
+    summary += `<button class="btn btn-primary mt-4 w-100" onclick="StartAgain()">Skúsiť znova</button>`;
+
+    document.getElementById("test").innerHTML = summary;
+    document.getElementById("answwer").innerHTML = "";
+}
+
+/* ===========================
+   RESTART
+=========================== */
+function StartAgain() {
+    location.reload();
+}
+
+/* ===========================
+   ENTER KEY SUPPORT
+=========================== */
+function SetEnterEvent() {
+    let input = document.getElementById("result");
+    input.addEventListener("keyup", function (event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("ShowResult").click();
+        }
+    });
+}
