@@ -31,22 +31,22 @@
     </style>
 
     <script>
-        // ==========================
-        // GLOBALS
-        // ==========================
+        /* ==========================
+           GLOBALS
+        ========================== */
         let AllDictionaries = {};
         let TestWords = [];
         let WordPosition = 0;
         let from_to = "to_sk";
         let Score = 0;
 
-        let WrongWords = {};
-        let RepeatMode = false;
-        let RepeatList = [];
+        let WrongWords = {};     // { foreign: { foreign, slovak, tries } }
+        let RepeatList = [];     // words to repeat
+        let InRepeatRound = false;
 
-        // ==========================
-        // LOAD DICTIONARY
-        // ==========================
+        /* ==========================
+           LOAD DICTIONARY
+        ========================== */
         function ReadDictionary() {
             $.ajax({
                 url: "https://www.nelicorn.com/games/learn_words/german_dictionary.json",
@@ -74,9 +74,9 @@
             document.getElementById("language").innerHTML = html;
         }
 
-        // ==========================
-        // LANGUAGE SELECTED
-        // ==========================
+        /* ==========================
+           LANGUAGE SELECTED
+        ========================== */
         function LanguageSelected() {
             let lessons = "";
             const LanguageList = Object.keys(AllDictionaries);
@@ -120,9 +120,9 @@
             document.getElementById("controls").innerHTML = "";
         }
 
-        // ==========================
-        // LESSON SELECTED
-        // ==========================
+        /* ==========================
+           LESSON SELECTED
+        ========================== */
         function LessonSelected() {
             TestWords = [];
             let LessonChecked = false;
@@ -174,9 +174,9 @@
             }
         }
 
-        // ==========================
-        // HELPERS
-        // ==========================
+        /* ==========================
+           HELPERS
+        ========================== */
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 let j = Math.floor(Math.random() * (i + 1));
@@ -185,21 +185,18 @@
         }
 
         function setDirection() {
-            const both = document.getElementById("both");
-            const fromSk = document.getElementById("from_sk");
-
-            if (both && both.checked) {
+            if (document.getElementById("both").checked) {
                 from_to = Math.random() < 0.5 ? "to_sk" : "from_sk";
-            } else if (fromSk && fromSk.checked) {
+            } else if (document.getElementById("from_sk").checked) {
                 from_to = "from_sk";
             } else {
                 from_to = "to_sk";
             }
         }
 
-        // ==========================
-        // RENDER QUESTION
-        // ==========================
+        /* ==========================
+           RENDER QUESTION
+        ========================== */
         function ShowWord(foreign, slovak, language, direction) {
             let text = "";
 
@@ -224,15 +221,16 @@
             return text;
         }
 
-        // ==========================
-        // START TEST
-        // ==========================
+        /* ==========================
+           START TEST
+        ========================== */
         function StartTest() {
             shuffle(TestWords);
             WordPosition = 0;
             Score = 0;
             WrongWords = {};
-            RepeatMode = false;
+            RepeatList = [];
+            InRepeatRound = false;
 
             document.getElementById("test-stopped").style.display = "none";
             document.getElementById("test-running").style.display = "block";
@@ -240,24 +238,36 @@
             showCurrent();
         }
 
-        // ==========================
-        // SHOW CURRENT WORD
-        // ==========================
+        /* ==========================
+           SHOW CURRENT WORD
+        ========================== */
         function showCurrent() {
-            const list = RepeatMode ? RepeatList : TestWords;
+            let list = InRepeatRound ? RepeatList : TestWords;
 
             if (WordPosition >= list.length) {
-                if (!RepeatMode && Object.keys(WrongWords).length > 0) {
-                    startRepeatRound();
-                    return;
+                if (!InRepeatRound) {
+                    RepeatList = Object.values(WrongWords).map(w => [w.foreign, w.slovak, ""]);
+                    if (RepeatList.length > 0) {
+                        startRepeatRound();
+                        return;
+                    }
+                } else {
+                    let stillWrong = Object.values(WrongWords).filter(w => w.tries > 0);
+                    if (stillWrong.length > 0) {
+                        RepeatList = stillWrong.map(w => [w.foreign, w.slovak, ""]);
+                        startRepeatRound();
+                        return;
+                    }
                 }
+
                 EndTest();
                 return;
             }
 
-            const foreign = list[WordPosition][0];
-            const slovak = list[WordPosition][1];
-            const lang = list[WordPosition][2];
+            let word = list[WordPosition];
+            let foreign = word[0];
+            let slovak = word[1];
+            let lang = word[2];
 
             setDirection();
 
@@ -269,36 +279,39 @@
             updateScoreDisplay();
         }
 
-        // ==========================
-        // SHOW RESULT
-        // ==========================
+        /* ==========================
+           SHOW RESULT
+        ========================== */
         function ShowResult() {
-            const inputEl = document.getElementById("result");
-            const rawInput = inputEl ? inputEl.value.trim() : "";
-
-            // no empty answers
-            if (rawInput === "") {
+            const input = document.getElementById("result").value.trim();
+            if (input === "") {
                 document.getElementById("answwer").innerHTML =
                     `<p class="text-warning mt-2"><i class="bi bi-exclamation-circle"></i> Najprv niečo napíš.</p>`;
                 return;
             }
 
-            const list = RepeatMode ? RepeatList : TestWords;
+            let list = InRepeatRound ? RepeatList : TestWords;
+            let word = list[WordPosition];
 
-            const foreign = list[WordPosition][0];
-            const slovak = list[WordPosition][1];
+            let foreign = word[0];
+            let slovak = word[1];
 
-            const correct = (from_to === "to_sk") ? slovak : foreign;
-            const user = rawInput.toLowerCase();
-            const correctLower = correct.toLowerCase();
-
-            let Answer = "";
+            let correct = (from_to === "to_sk") ? slovak : foreign;
+            let user = input.toLowerCase();
+            let correctLower = correct.toLowerCase();
 
             if (user === correctLower) {
                 Score++;
-                Answer = `<p class="text-success mt-2"><i class="bi bi-check-circle"></i> Správne!</p>`;
+                document.getElementById("answwer").innerHTML =
+                    `<p class="text-success mt-2"><i class="bi bi-check-circle"></i> Správne!</p>`;
+
+                if (InRepeatRound && WrongWords[foreign]) {
+                    WrongWords[foreign].tries = 0;
+                }
+
             } else {
-                Answer = `<p class="text-danger mt-2"><i class="bi bi-x-circle"></i> Neprávne — ${foreign} = ${slovak}</p>`;
+                document.getElementById("answwer").innerHTML =
+                    `<p class="text-danger mt-2"><i class="bi bi-x-circle"></i> Neprávne — ${foreign} = ${slovak}</p>`;
 
                 if (!WrongWords[foreign]) {
                     WrongWords[foreign] = { foreign, slovak, tries: 1 };
@@ -307,20 +320,17 @@
                 }
             }
 
-            document.getElementById("answwer").innerHTML = Answer;
-
             WordPosition++;
             showCurrent();
         }
 
-        // ==========================
-        // REPEAT ROUND
-        // ==========================
+        /* ==========================
+           START REPEAT ROUND
+        ========================== */
         function startRepeatRound() {
-            RepeatMode = true;
+            InRepeatRound = true;
             WordPosition = 0;
 
-            RepeatList = Object.values(WrongWords).map(w => [w.foreign, w.slovak, ""]);
             shuffle(RepeatList);
 
             document.getElementById("answwer").innerHTML =
@@ -329,20 +339,22 @@
             showCurrent();
         }
 
-        // ==========================
-        // END TEST
-        // ==========================
+        /* ==========================
+           END TEST
+        ========================== */
         function EndTest() {
             let summary = `
                 <h3 class="text-secondary mt-2">Koniec testu</h3>
                 <p class="mt-2">Správne: <strong>${Score}</strong> z <strong>${TestWords.length}</strong></p>
             `;
 
-            if (Object.keys(WrongWords).length > 0) {
+            let wrongList = Object.values(WrongWords).filter(w => w.tries > 0);
+
+            if (wrongList.length > 0) {
                 summary += `<h4 class="mt-4">Slová na zopakovanie</h4><ul class="mt-2">`;
-                for (let w of Object.values(WrongWords)) {
+                wrongList.forEach(w => {
                     summary += `<li>${w.foreign} = ${w.slovak} — pokusy: ${w.tries}</li>`;
-                }
+                });
                 summary += `</ul>`;
             }
 
@@ -355,37 +367,35 @@
             document.getElementById("answwer").innerHTML = "";
         }
 
-        // ==========================
-        // SCORE DISPLAY
-        // ==========================
+        /* ==========================
+           SCORE DISPLAY
+        ========================== */
         function updateScoreDisplay() {
-            const totalAnswered = WordPosition;
-            const wrong = totalAnswered - Score;
-            const remaining = (RepeatMode ? RepeatList.length : TestWords.length) - totalAnswered;
+            const wrong = Object.values(WrongWords).reduce((a, b) => a + b.tries, 0);
+            const remaining = TestWords.length - Score;
 
             document.getElementById("score").innerHTML =
                 `<p class="mb-0">Správne: ${Score} / Nesprávne: ${wrong} / Zostáva: ${remaining}</p>`;
         }
 
-        // ==========================
-        // RESTART
-        // ==========================
+        /* ==========================
+           RESTART
+        ========================== */
         function StartAgain() {
             location.reload();
         }
 
-        // ==========================
-        // ENTER KEY SUPPORT
-        // ==========================
+        /* ==========================
+           ENTER KEY SUPPORT
+        ========================== */
         function SetEnterEvent() {
             const input = document.getElementById("result");
             if (!input) return;
 
             input.addEventListener("keyup", function (event) {
-                if (event.key === "Enter" || event.keyCode === 13) {
+                if (event.key === "Enter") {
                     event.preventDefault();
-                    const btn = document.getElementById("ShowResult");
-                    if (btn) btn.click();
+                    document.getElementById("ShowResult").click();
                 }
             });
         }
