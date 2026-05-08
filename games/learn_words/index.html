@@ -348,7 +348,7 @@
                 <p class="mt-2">Správne: <strong>${Score}</strong> z <strong>${TestWords.length}</strong></p>
             `;
 
-            let wrongList = Object.values(WrongWords).filter(w => w.tries > 0);
+            let wrongList = Object.values(WrongWords);
 
             if (wrongList.length > 0) {
                 summary += `<h4 class="mt-4">Slová na zopakovanie</h4><ul class="mt-2">`;
