@@ -28,19 +28,19 @@
            GLOBALS
         ========================== */
         let AllDictionaries = {};
-        let TestWords = [];      // [foreign, slovak, language]
-        let OriginalWords = [];  // backup for restart
+        let TestWords = [];      
+        let OriginalWords = [];  
         let WordPosition = 0;
         let from_to = "to_sk";
 
-        let WrongWords = {};     // foreign -> { foreign, slovak, attempts }
-        let WrongOrder = [];     // order of first wrong
-        let Mastered = {};       // foreign -> true if answered correctly after being wrong
-        let RepeatList = [];     // words to repeat
+        let WrongWords = {};     
+        let WrongOrder = [];     
+        let Mastered = {};       
+        let RepeatList = [];     
         let InRepeatRound = false;
 
-        let answeredInitial = 0; // how many words answered in initial round
-        let CorrectFirstTry = 0; // correct on first try
+        let answeredInitial = 0; 
+        let CorrectFirstTry = 0; 
 
         /* ==========================
            LOAD DICTIONARY
@@ -139,7 +139,6 @@
 
                             const WordList = Object.keys(AllDictionaries[key][lesson]);
 
-                            // JSON is Slovak -> German
                             WordList.forEach(slovakWord => {
                                 let germanWord = AllDictionaries[key][lesson][slovakWord];
                                 TestWords.push([germanWord, slovakWord, key]);
@@ -226,7 +225,7 @@
            START TEST
         ========================== */
         function StartTest() {
-            OriginalWords = [...TestWords]; // backup for restart
+            OriginalWords = [...TestWords];
             restartQuiz();
         }
 
@@ -257,7 +256,6 @@
 
             if (WordPosition >= list.length) {
 
-                // Build repeat list
                 RepeatList = WrongOrder
                     .filter(f => !Mastered[f])
                     .map(f => {
@@ -309,8 +307,6 @@
             let correct = (from_to === "to_sk") ? slovak : foreign;
             let user = input.toLowerCase();
             let correctLower = correct.toLowerCase();
-
-            let firstTimeWrong = false;
 
             if (user === correctLower) {
                 document.getElementById("answwer").innerHTML =
@@ -417,10 +413,22 @@
         }
 
         /* ==========================
-           RESTART
+           GO HOME (RESET EVERYTHING)
         ========================== */
-        function StartAgain() {
-            restartQuiz();
+        function GoHome() {
+            document.getElementById("test-running").style.display = "none";
+            document.getElementById("test-stopped").style.display = "block";
+
+            document.getElementById("lessons").innerHTML = "";
+            document.getElementById("controls").innerHTML = "";
+
+            const LanguageList = Object.keys(AllDictionaries);
+            LanguageList.forEach((key, index) => {
+                const cb = document.getElementById("language" + index);
+                if (cb) cb.checked = false;
+            });
+
+            document.getElementById("list-dictionaries").style.display = "none";
         }
 
         /* ==========================
@@ -479,5 +487,11 @@
                     <p class="mb-0">Správne: 0 / Nesprávne: 0 / Zostáva: 0</p>
                 </div>
 
-                <button type="button" class="btn btn-link mt-3 px-0" onclick="restartQuiz()">
-                    <i class="bi bi-arrow-left me-2"></i>Späť / Ukončiť
+                <button type="button" class="btn btn-link mt-3 px-0" onclick="GoHome()">
+                    <i class="bi bi-arrow-left me-2"></i>Späť / Ukončiť test
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
