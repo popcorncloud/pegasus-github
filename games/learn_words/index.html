@@ -29,6 +29,7 @@
         ========================== */
         let AllDictionaries = {};
         let TestWords = [];      // [foreign, slovak, language]
+        let OriginalWords = [];  // backup for restart
         let WordPosition = 0;
         let from_to = "to_sk";
 
@@ -39,6 +40,7 @@
         let InRepeatRound = false;
 
         let answeredInitial = 0; // how many words answered in initial round
+        let CorrectFirstTry = 0; // correct on first try
 
         /* ==========================
            LOAD DICTIONARY
@@ -224,7 +226,14 @@
            START TEST
         ========================== */
         function StartTest() {
+            OriginalWords = [...TestWords]; // backup for restart
+            restartQuiz();
+        }
+
+        function restartQuiz() {
+            TestWords = [...OriginalWords];
             shuffle(TestWords);
+
             WordPosition = 0;
             WrongWords = {};
             WrongOrder = [];
@@ -232,6 +241,7 @@
             RepeatList = [];
             InRepeatRound = false;
             answeredInitial = 0;
+            CorrectFirstTry = 0;
 
             document.getElementById("test-stopped").style.display = "none";
             document.getElementById("test-running").style.display = "block";
@@ -300,12 +310,18 @@
             let user = input.toLowerCase();
             let correctLower = correct.toLowerCase();
 
+            let firstTimeWrong = false;
+
             if (user === correctLower) {
                 document.getElementById("answwer").innerHTML =
                     `<p class="text-success mt-2"><i class="bi bi-check-circle"></i> Správne!</p>`;
 
                 if (!InRepeatRound) {
                     answeredInitial++;
+                }
+
+                if (!WrongWords[foreign]) {
+                    CorrectFirstTry++;
                 }
 
                 if (WrongWords[foreign]) {
@@ -357,7 +373,7 @@
         function EndTest() {
             const totalWords = TestWords.length;
             const incorrectWords = Object.keys(WrongWords).length;
-            const correctWords = totalWords - incorrectWords;
+            const correctWords = CorrectFirstTry;
 
             let summary = `
                 <h3 class="text-secondary mt-2">Koniec testu</h3>
@@ -374,7 +390,7 @@
             }
 
             summary += `
-                <button class="btn btn-primary mt-4 w-100" onclick="StartAgain()">
+                <button class="btn btn-primary mt-4 w-100" onclick="restartQuiz()">
                     Skúsiť znova
                 </button>`;
 
@@ -391,16 +407,9 @@
         function updateScoreDisplay() {
             const totalWords = TestWords.length;
             const incorrectWords = Object.keys(WrongWords).length;
-            const correctWords = totalWords - incorrectWords;
+            const correctWords = CorrectFirstTry;
 
-            let remaining;
-
-            if (!InRepeatRound) {
-                remaining = (totalWords - answeredInitial) + RepeatList.length;
-            } else {
-                remaining = RepeatList.length;
-            }
-
+            let remaining = (totalWords - answeredInitial) + RepeatList.length;
             if (remaining < 0) remaining = 0;
 
             document.getElementById("score").innerHTML =
@@ -411,7 +420,7 @@
            RESTART
         ========================== */
         function StartAgain() {
-            location.reload();
+            restartQuiz();
         }
 
         /* ==========================
@@ -470,11 +479,5 @@
                     <p class="mb-0">Správne: 0 / Nesprávne: 0 / Zostáva: 0</p>
                 </div>
 
-                <button type="button" class="btn btn-link mt-3 px-0" onclick="StartAgain()">
-                    <i class="bi bi-arrow-left me-2"></i>Späť / Ukončiť test
-                </button>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+                <button type="button" class="btn btn-link mt-3 px-0" onclick="restartQuiz()">
+                    <i class="bi bi-arrow-left me-2"></i>Späť / Ukončiť
