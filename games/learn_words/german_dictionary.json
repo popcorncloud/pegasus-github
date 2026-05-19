@@ -98,7 +98,7 @@
         }
     },
     "Deutsch 2":{
-        "Nepravidelné slovesá - infinitív + perfektum":{
+        "Nepravidelné slovesá 156 - infinitív + perfektum":{
             "začať":"anfangen, hat angefangen",
             "padať":"fallen, ist gefallen",
             "páčiť sa":"gefallen, hat gefallen",
@@ -136,7 +136,7 @@
             "ísť":"gehen, ist gegangen",
             "visieť":"hängen, hat gehangen"
         },
-        "Nepravidelné slovesá - prítomný čas":{
+        "Nepravidelné slovesá 156 - prítomný čas":{
             "anfangen":"er fängt an",
             "fallen":"er fällt",
             "gefallen":"es gefällt",
@@ -174,7 +174,7 @@
             "gehen":"er geht",
             "hängen":"er hängt"
         },
-        "Nepravidelné slovesá - infinitív + prítomný čas + perfektum":{
+        "Nepravidelné slovesá 156 - infinitív + prítomný čas + perfektum":{
             "začať":"anfangen, er fängt an, hat angefangen",
             "padať":"fallen, er fällt, ist gefallen",
             "páčiť sa":"gefallen, es gefällt, hat gefallen",
@@ -211,6 +211,22 @@
             "stúpať hore":"steigen, er steigt, ist gestiegen",
             "ísť":"gehen, er geht, ist gegangen",
             "visieť":"hängen, er hängt, hat gehangen"
+        },
+        "Nepravidelné slovesá 157 - infinitív + perfektum":{
+            "ponúknuť":"bieten, hat geboten",
+            "lietať":"fliegen, ist geflogen",
+            "utiecť":"fliehen, ist geflohen",
+            "mrznúť":"frieren, hat gefroren",
+            "užívať si":"genießen, hat genossen",
+            "polievať":"gießen, hat gegossen",
+            "voňať":"riechen, hat gerochen",
+            "posúvať/tlačiť":"schieben, hat geschoben",
+            "zatvoriť/zamknúť":"schließen, hat geschlossen",
+            "zakázať":"verbieten, hat verboten",
+            "stratiť/prehrať":"verlieren, hat verloren",
+            "vážiť":"wiegen, hat gewogen",
+            "ťahať":"ziehen, hat gezogen"
+
         }
     }
 }
