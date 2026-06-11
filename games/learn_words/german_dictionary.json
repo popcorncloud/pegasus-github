@@ -255,6 +255,43 @@
             "bežať":"laufen, ist gelaufen",
             "volať sa":"heißen, hat geheißen",
             "naraziť":"stoßen, hat gestoßen"
+        },
+        "Nepravidelné slovesá 158 - infinitív + perfektum":{
+            "horieť":"brennen, hat gebrannt",
+            "myslieť":"denken, hat gedacht",
+            "poznať":"kennen, hat gekannt",
+            "volať/nazývať":"nennen, hat genannt",
+            "bežať":"rennen, ist gerannt",
+            "stáť":"stehen, hat gestanden",
+            "rozumieť/chápať":"verstehen, hat verstanden",
+            "dvíhať":"heben, hat gehoben",
+            "kúsať/hrýzť":"beißen, hat gebissen",
+            "trpieť":"leiden, hat gelitten",
+            "krájať/strihať":"schneiden, hat geschnitten",
+            "hádať sa":"streiten, hat gestritten",
+            "porovnávať":"vergleichen, hat verglichen",
+            "priniesť":"bringen, hat gebracht",
+            "mrzieť":"tun, hat getan",
+            "podvádzať":"betrügen, hat betrogen",
+            "klamať":"lügen, hat gelogen",
+            "prosiť":"bitten, hat gebeten",
+            "ležať":"liegen, hat gelegen",
+            "sedieť":"sitzen, hat gesessen",
+            "začať":"beginnen, hat begonnen",
+            "získať/vyhrať":"gewinnen, hat gewonnen",
+            "plávať":"schwimmen, hat/ist geschwommen"
+        },
+        "Nepravidelné slovesá 158 - pomocné a modálne - infinitív + perfektum":{
+            "mať":"haben, hat gehabt",
+            "byť":"sein, ist gewesen",
+            "stať sa (lekárom)":"werden, ist geworden",
+            "smieť":"dürfen, hat gedurft",
+            "môcť":"können, hat gekonnt",
+            "mať rád":"mögen, hat gemocht",
+            "musieť":"müssen, hat gemusst",
+            "mať (niečo spraviť)":"sollen, hat gesollt",
+            "chcieť":"wollen, hat gewollt",
+            "vedieť":"wissen, hat gewusst"
         }
 
         
