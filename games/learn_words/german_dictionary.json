@@ -292,7 +292,25 @@
             "mať (niečo spraviť)":"sollen, hat gesollt",
             "chcieť":"wollen, hat gewollt",
             "vedieť":"wissen, hat gewusst"
+        },
+        "Slovesá z textu + minulý čas":{
+            "byť":"seid, war",
+            "cestovať":"reisen, ist gereist",
+            "pozrieť si":"anschauen, hat angeschaut",
+            "stihnúť":"schaffen, hat geschafft",
+            "čakať":"warten, hat gewartet",
+            "vyzdvihnúť":"abholen, hat abgeholt",
+            "pracovať":"arbeiten, hat gearbeitet",
+            "bývať":"wohnen, hat gewohnt",
+            "prezrieť si/navštíviť":"besichtigen, hat besichtigt",
+            "ochutnať":"probieren, hat probiert",
+            "hľadať":"suchen, hat gesucht",
+            "navštíviť":"besuchen, hat besucht",
+            "mať":"hatte",
+            "stať sa":"passiert, ist passiert",
+            "rozprávať":"erzählen, hat erzählt"
         }
+
 
         
     }
