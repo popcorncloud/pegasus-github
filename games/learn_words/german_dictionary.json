@@ -294,7 +294,7 @@
             "vedieť":"wissen, hat gewusst"
         },
         "Slovesá z textu + minulý čas":{
-            "byť":"seid, war",
+            "byť":"seid, war, ist gewesen",
             "cestovať":"reisen, ist gereist",
             "pozrieť si":"anschauen, hat angeschaut",
             "stihnúť":"schaffen, hat geschafft",
@@ -306,8 +306,8 @@
             "ochutnať":"probieren, hat probiert",
             "hľadať":"suchen, hat gesucht",
             "navštíviť":"besuchen, hat besucht",
-            "mať":"hatte",
-            "stať sa":"passiert, ist passiert",
+            "mať":"hatte, hat gehabt",
+            "stať sa":"passieren, ist passiert",
             "rozprávať":"erzählen, hat erzählt"
         }
 
