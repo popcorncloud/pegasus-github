@@ -309,9 +309,31 @@
             "mať":"haben, hatte, hat gehabt",
             "stať sa":"passieren, ist passiert",
             "rozprávať":"erzählen, hat erzählt"
+        },
+        "Ďalšie slová z textu":{
+            "vlak": "der Zug",
+            "stanica": "der Bahnhof",
+            "taxikár": "der Taxifahrer",
+            "Hofburg (cisársky palác vo Viedni)": "die Hofburg",
+            "Hundertwasserov dom": "das Hundertwasserhaus",
+            "Prater (zábavný park)": "der Prater",
+            "Museumsquartier (muzejná štvrť)": "das Museumsquartier",
+            "kaviareň": "das Café",
+            "Dóm svätého Štefana": "der Stephansdom",
+            "Sacherova torta": "die Sacher-Torte",
+            "radnica": "das Rathaus",
+            "mapa mesta": "der Stadtplan",
+            "Picassova výstava": "die Picasso-Ausstellung",
+            "Albertina (galéria umenia)": "die Albertina",
+            "trieda (skupina žiakov)": "die Klasse",
+            "žiaci": "die Schüler",
+            "videá": "die Videos",
+            "fotky": "die Fotos",
+            "začiatok": "der Anfang",
+            "šťastie": "das Glück",
+            "deň": "der Tag"
+  
         }
-
-
         
     }
 }
