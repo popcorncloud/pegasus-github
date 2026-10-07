@@ -332,7 +332,7 @@
 
             } else {
                 document.getElementById("answwer").innerHTML =
-                    `<p class="text-danger mt-2"><i class="bi bi-x-circle"></i> Neprávne — ${foreign} = ${slovak}</p>`;
+                    `<p class="text-danger mt-2"><i class="bi bi-x-circle"></i> Nesprávne — ${foreign} = ${slovak}</p>`;
 
                 if (!InRepeatRound) {
                     answeredInitial++;
@@ -357,8 +357,8 @@
             InRepeatRound = true;
             WordPosition = 0;
 
-            document.getElementById("answwer").innerHTML =
-                `<p class="text-info mt-3"><i class="bi bi-arrow-repeat"></i> Opakovanie nesprávnych slov...</p>`;
+//            document.getElementById("answwer").innerHTML =
+//                `<p class="text-info mt-3"><i class="bi bi-arrow-repeat"></i> Opakovanie nesprávnych slov...</p>`;
 
             showCurrent();
         }
