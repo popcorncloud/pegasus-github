@@ -293,7 +293,7 @@
             "chcieť":"wollen, hat gewollt",
             "vedieť":"wissen, hat gewusst"
         },
-        "Slovesá z textu + minulý čas":{
+        "Slovesá z textu str. 134 + minulý čas":{
             "byť":"sein, war, ist gewesen",
             "cestovať":"reisen, ist gereist",
             "pozrieť si":"anschauen, hat angeschaut",
@@ -310,7 +310,7 @@
             "stať sa":"passieren, ist passiert",
             "rozprávať":"erzählen, hat erzählt"
         },
-        "Ďalšie slová z textu":{
+        "Podstatné mená z textu str. 134":{
             "vlak": "der Zug",
             "stanica": "der Bahnhof",
             "taxikár": "der Taxifahrer",
@@ -328,12 +328,29 @@
             "trieda (skupina žiakov)": "die Klasse",
             "žiak": "der Schüler",
             "video": "das Video",
-            "fotka": "die Foto",
+            "fotka": "das Foto",
             "začiatok": "der Anfang",
             "šťastie": "das Glück",
             "deň": "der Tag",
             "pamiatka": "die Sehenswürdigkeit"
-  
+        },
+            "Slovesá z textu str. 135 + minulý čas":{
+            "zobudiť sa":"aufwachen, ist aufgewacht",
+            "raňajkovať":"frühstücken, hat gefrühstückt",
+            "surfovať":"surfen, hat gesurft",
+            "četovať":"chatten, hat gechattet",
+            "robiť":"machen, hat gemacht",
+            "hrať":"spielen, hat gespielt",
+            "učiť sa":"lernen, hat gelernt",
+            "nakupovať":"einkaufen, hat eingekauft",
+            "objednať":"bestellen, hat bestellt",
+            "telefonovať":"telefonieren, hat telefoniert",
+            "počuť/počúvať":"hören, hat gehört",
+            "oslavovať":"feiern, hat gefeiert",
+            "navštíviť":"besuchen, hat besucht",
+            "odpovedať":"antworten, hat geantwortet",
+            "smiať sa":"lachen, hat gelacht",
+            "variť":"kochen, hat gekocht"
         }
         
     }
